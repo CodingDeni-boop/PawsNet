@@ -2,7 +2,10 @@
 
 Welcome to the official repository of **PawsNet**!
 
-<img width="2388" height="1668" alt="PawsNet_Transparent" src="https://github.com/user-attachments/assets/ed0a8039-8efe-46d8-811a-c50f72e12e6a" />
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/ed0a8039-8efe-46d8-811a-c50f72e12e6a"
+       style="object-fit: cover; width: 500px; height: 500px;" />
+</div>
 
 ---
 
