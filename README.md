@@ -1,8 +1,12 @@
 # PawsNet
-The PawsNet official repository
 
+Welcome to the official repository of **PawsNet**!
 
-From the Focus Project 2025 Team 
+---
 
+## By the Focus Project 2025 Team
 
-Daniele Bugatti, Natalie Haldner, Radu Negovan, Nataliia Stempkovska
+- Daniele Bugatti  
+- Natalie Haldner  
+- Radu Negovan  
+- Nataliia Stempstkovska  
