@@ -9,4 +9,4 @@ Welcome to the official repository of **PawsNet**!
 - Daniele Bugatti  
 - Natalie Haldner  
 - Radu Negovan  
-- Nataliia Stempstkovska  
+- Nataliia Stempkovska  
