@@ -1,16 +1,16 @@
 #   this code ROTATES (and ZOOMS) the video relative to the mouse position
-    #   it also creates a "box" around the mouse to signal the position of the oft / experiment border location.
 
+import py3r.behaviour as p3b
 import cv2
-from utilities import terminal_colors as colors
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import math
+import os
 
 
 class VideoRotator:
-    
+
     def __init__(self, video_path : str, output_path : str, out_width : int, out_height : int):
         """ 
         Docstring for __init__
@@ -28,13 +28,15 @@ class VideoRotator:
         if not self.cap.isOpened():
             raise KeyError(f"{video_path} is not a valid video path")
         
+        self.video_path = video_path
+        
         self.total_frames = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.original_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.original_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-        fps = self.cap.get(cv2.CAP_PROP_FPS)
+        self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-        self.out = cv2.VideoWriter(output_path, fourcc, fps, (out_width, out_height), isColor=False)
+        self.out = cv2.VideoWriter(output_path, fourcc, self.fps, (out_width, out_height), isColor=False)
         if not self.out.isOpened():
             raise KeyError(f"{output_path} is not a valid output path")
 
@@ -44,9 +46,15 @@ class VideoRotator:
         self.crop_y1 = self.crop_y0 + out_height
 
 
-    def follow(self, tracking_dataframe : pd.DataFrame, centre : str, endpoint : str):
+    def follow(self, tracking_path : str, centre : str, endpoint : str):
 
-        with tqdm(desc = colors.GREEN +"rotating" + colors.ENDC, total = self.total_frames, ascii = True) as pbar:
+        tracking = p3b.Tracking.from_yolo3r(filepath = tracking_path, fps=self.fps, handle = "video")
+        tracking.filter_likelihood(threshold=0.7)
+        tracking.interpolate(limit=5)
+        tracking.smooth_all(method="savgol")
+        tracking_dataframe = tracking.data
+
+        with tqdm(desc = f"rotating {self.video_path}", total = self.total_frames, ascii = True) as pbar:
             for n in range(0, self.total_frames):
                 ret, frame = self.cap.read()
 
@@ -55,7 +63,7 @@ class VideoRotator:
                         (self.original_height, self.original_width),
                         dtype=np.uint8
                     )
-                    print(colors.FAIL + f"frame {n} not read was imputed" + colors.ENDC)
+                    print(f"frame {n} not read was imputed")
 
                 px = tracking_dataframe.loc[n, endpoint+".x"]
                 py = tracking_dataframe.loc[n, endpoint+".y"]
@@ -90,19 +98,3 @@ class VideoRotator:
         self.cap.release()
         self.out.release()
         cv2.destroyAllWindows()
-
-video_names = ["BehaviourCamera_2026-03-11T10_45_44_OFT2Splash_41.avi",
-               "BehaviourCamera_2026-03-11T11_11_14_OFT2Splash_38.avi",
-               "BehaviourCamera_2026-03-11T11_35_06_OFTSplash_50.avi",
-               "BehaviourCamera_2026-03-11T12_00_20_OFTSplash_51.avi",
-               "BehaviourCamera_2026-03-11T13_21_00_OFTSplash_46.avi",
-               "BehaviourCamera_2026-03-11T13_43_51_OFTSplash_47.avi",
-               ]
-
-print(video_names)
-
-for v in video_names:
-    rotator = VideoRotator(f"./OFT+Splash/raw_videos/{v}", f"./OFT+Splash/rotated_videos/{v[:-4]}" + ".mp4", 76, 142)
-    rotator.follow(pd.read_csv(f"./OFT+Splash/tracking/{v[:-4]}" + ".csv"), "mouse_top.mouse_top_0.bodycentre","mouse_top.mouse_top_0.neck")
-
-
