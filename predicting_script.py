@@ -17,7 +17,7 @@ from post_processing import apply_gap_fill, apply_min_duration_filter, apply_sup
 if __name__ == "__main__":
 
     ROTATE = False
-    MODEL_PATH         = "model_saves/CNN_Transformer.pth"
+    MODEL_PATH = "model_saves/The_PawsNet.pth" # I called the model which I trained on all videos (62 train, 11 validation, 0 test) The_PawsNet.pth
     RAW_VIDEOS_DIR = "./to_predict/raw_videos"
     TRACKING_DIR = "./to_predict/tracking"
     ROTATED_VIDEOS_DIR = "./to_predict/rotated_videos"
