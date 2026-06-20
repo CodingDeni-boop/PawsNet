@@ -18,14 +18,15 @@ from create_video import annotate_video_with_predictions
 
 if __name__ == "__main__":
 
-    ROTATE = False                      #       <-
+    ROTATE = False                       #       <-
     EVALUATE_ON_TEST = False             #       <-  These three toggle certain parts of the code like switches. 
     GENERATE_ANNOTATED_VIDEOS = False    #       <-
+    LOAD_CHECKPOINT = True               #       <-
     RAW_VIDEOS_DIR = "./dataset/raw_videos"
     TRACKING_DIR = "./dataset/tracking"
     ROTATED_VIDEOS_DIR = "./dataset/rotated_videos"
     LABELS_DIR = "./dataset/labels"
-    MODEL_PATH         = "model_saves/CNN_Transformer.pth"
+    MODEL_PATH         = "model_saves/The_PawsNet.pth"
     PREDICTIONS_DIR      = "./predictions_for_evaluation"
     METRICS_DIR = "./metrics"
     SEQUENCE_LENGTH = 30
@@ -36,7 +37,7 @@ if __name__ == "__main__":
     BATCH_SIZE      = 32
     DROPOUT         = 0.3
     NUM_EPOCHS         = 150         # For fast debugging put this to 1
-    LEARNING_RATE      = 0.0001
+    LEARNING_RATE      = 0.00003
     CNN_FEATURE_DIM  = 512
     D_MODEL          = 512
     NHEAD            = 8
@@ -128,15 +129,29 @@ if __name__ == "__main__":
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False,
                                     num_workers=2, pin_memory=True)
 
-    model = CNNTransformerClassifier(
-        cnn_feature_dim=CNN_FEATURE_DIM,
-        d_model=D_MODEL,
-        nhead=NHEAD,
-        num_layers=NUM_LAYERS,
-        num_classes=len(behaviors),
-        dim_feedforward=DIM_FEEDFORWARD,
-        dropout=DROPOUT
-    ).to(device)
+    if LOAD_CHECKPOINT:
+        checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
+        model = CNNTransformerClassifier(
+            cnn_feature_dim=checkpoint['cnn_feature_dim'],
+            d_model=checkpoint['d_model'],
+            nhead=checkpoint['nhead'],
+            num_layers=checkpoint['num_layers'],
+            num_classes=checkpoint['num_classes'],
+            dim_feedforward=checkpoint['dim_feedforward'],
+            dropout=DROPOUT
+        ).to(device)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        print("Model loaded.")
+    else:
+        model = CNNTransformerClassifier(
+            cnn_feature_dim=CNN_FEATURE_DIM,
+            d_model=D_MODEL,
+            nhead=NHEAD,
+            num_layers=NUM_LAYERS,
+            num_classes=len(behaviors),
+            dim_feedforward=DIM_FEEDFORWARD,
+            dropout=DROPOUT
+        ).to(device)
 
     print(f"\nModel architecture:\n{model}")
     print(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")
