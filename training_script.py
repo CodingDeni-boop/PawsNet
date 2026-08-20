@@ -7,7 +7,6 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 import numpy as np
 import pandas as pd
-import os
 from sklearn.metrics import f1_score
 from Model import CNNTransformerClassifier
 from model_methods import train_epoch, evaluate, predict_per_video
@@ -197,7 +196,7 @@ if __name__ == "__main__":
         scheduler.step()
         current_lr = optimizer.param_groups[0]['lr']
         print(f"Learning rate: {current_lr:.6f}")
-        y_pred, y_true = evaluate(model, val_loader, device, background_class = 0)
+        y_pred, y_true = evaluate(model, val_loader, device, background_class=0, gap_window=GAP_WINDOW, min_duration_window=MIN_DURATION_WINDOW)
         val_acc = 100 * np.sum(y_pred == y_true) / len(y_true)
         val_f1  = f1_score(y_true, y_pred, average='macro')
 

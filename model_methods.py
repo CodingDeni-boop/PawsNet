@@ -47,7 +47,7 @@ def train_epoch(model, dataloader, criterion, optimizer, device):
 
     return total_loss / len(dataloader)
 
-def evaluate(model, dataloader, device, return_per_video=False, background_class=0):
+def evaluate(model, dataloader, device, return_per_video=False, background_class=0, gap_window=15, min_duration_window=15):
     """
     Evaluate model with per-frame predictions.
 
@@ -106,8 +106,8 @@ def evaluate(model, dataloader, device, return_per_video=False, background_class
 
     # Apply postprocessing per video
     for video_id in per_video_data:
-        filtered = apply_min_duration_filter(per_video_data[video_id]['preds'], background_class=background_class)
-        filtered = apply_gap_fill(filtered, background_class=background_class)
+        filtered = apply_min_duration_filter(per_video_data[video_id]['preds'], min_duration=min_duration_window, background_class=background_class)
+        filtered = apply_gap_fill(filtered, max_gap=gap_window, background_class=background_class)
         per_video_data[video_id]['preds'] = filtered.tolist()
 
     # Reconstruct flat arrays from filtered per-video videos
