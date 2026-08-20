@@ -163,7 +163,7 @@ if __name__ == "__main__":
 
     # CHANGE (v20): Boost underperforming classes before capping background.
     # Unsupportedrearing and Grooming consistently spill into background on test set.
-    CLASS_BOOSTS = {'Unsupportedrearing': 1.5, 'Grooming': 1.5}
+    CLASS_BOOSTS = {'unsupportedrear': 1.5, 'grooming': 1.5}
     for cls_idx, cls_name in enumerate(behaviors):
         if cls_name in CLASS_BOOSTS:
             class_weights[cls_idx] *= CLASS_BOOSTS[cls_name]
@@ -184,8 +184,7 @@ if __name__ == "__main__":
 
     weight_tensor = torch.FloatTensor(class_weights_array).to(device)
 
-    ###  weight_tensor now found. This whole code part could be substituted by arbitrarily chosing class_weights = [1, 2, 2.5, 2, 1]. 
-
+    ###  weight_tensor now found. This whole code part could be substituted by arbitrarily choosing class_weights = [1, 2, 2.5, 2, 1].
     criterion = nn.CrossEntropyLoss(weight=weight_tensor, label_smoothing=0.01)
     optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=0.05)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=NUM_EPOCHS)
