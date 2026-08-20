@@ -238,8 +238,8 @@ if __name__ == "__main__":
         test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
         per_video = predict_per_video(model, test_loader, device)
         for video_id, (frame_indices, preds) in per_video.items():
-            preds = apply_gap_fill(preds)
-            preds = apply_min_duration_filter(preds)
+            preds = apply_gap_fill(preds, max_gap=GAP_WINDOW)
+            preds = apply_min_duration_filter(preds, min_duration=MIN_DURATION_WINDOW)
             one_hot = np.zeros((len(preds), len(behaviors)), dtype=int)
             for i, cls_idx in enumerate(preds):
                 one_hot[i, cls_idx] = 1
