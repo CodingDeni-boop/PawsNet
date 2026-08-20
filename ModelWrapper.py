@@ -92,7 +92,7 @@ class ModelWrapper():
               )
 
 class LabelWrapper():
-    def __init__(self, total_prediction_file_path : str, total_true_file_path : tuple[str], column_names : Dict[str, int], smoothing : Literal["gap", "py3r", "no"], gap_window : int = 5, min_duration_window : int = None):
+    def __init__(self, total_prediction_file_path : str, total_true_file_path : str, column_names : Dict[str, int], smoothing : Literal["gap", "py3r", "no"], gap_window : int = 5, min_duration_window : int = None):
         self.true, self.pred = csv_read(true_path = total_true_file_path,  pred_path = total_prediction_file_path, cut_and_pad = True, column_names = column_names)
         self.column_names = column_names
 
@@ -109,8 +109,8 @@ class LabelWrapper():
         
     def get_behavior_count(self):
 
-        true_behavior_count = {0 : 0, 1 : 0, 2 : 0, 3 : 0, 4 : 0}
-        pred_behavior_count = {0 : 0, 1 : 0, 2 : 0, 3 : 0, 4 : 0}
+        true_behavior_count = {k: 0 for k in self.column_names}
+        pred_behavior_count = {k: 0 for k in self.column_names}
 
         current_behavior = -1
         for behavior in self.true:
