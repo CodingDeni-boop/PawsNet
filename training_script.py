@@ -42,7 +42,6 @@ if __name__ == "__main__":
     NHEAD            = 8
     NUM_LAYERS       = 3
     DIM_FEEDFORWARD  = 2048
-    DROPOUT          = 0.3
     SMOOTHING = "gap"
     GAP_WINDOW = 5
     MIN_DURATION_WINDOW = 5
