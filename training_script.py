@@ -255,11 +255,12 @@ if __name__ == "__main__":
         CNNTransformer.plot_confusion_matrix(normalize = CONFUSION_MATRIX_NORMALIZE)
         plot_instance_count_scatter(model_wrappers=[CNNTransformer],output_path=os.path.join(METRICS_DIR, "behavior_instance_count.png"))
 
-        for i, video_id in enumerate(TEST_VIDEO_NAMES):
-            annotate_video_with_predictions(
-                video_path = os.path.join(ROTATED_VIDEOS_DIR, f"{video_id}.mp4"),
-                predictions = CNNTransformer.label_wrappers[i].pred,
-                output_path = os.path.join(METRICS_DIR, f"{video_id}_annotated_by_{CNNTransformer.name}.mp4"),
-                true_labels = CNNTransformer.label_wrappers[i].true,
-                column_names = COLUMN_NAMES
-            )
+        if GENERATE_ANNOTATED_VIDEOS:
+            for i, video_id in enumerate(TEST_VIDEO_NAMES):
+                annotate_video_with_predictions(
+                    video_path = os.path.join(ROTATED_VIDEOS_DIR, f"{video_id}.mp4"),
+                    predictions = CNNTransformer.label_wrappers[i].pred,
+                    output_path = os.path.join(METRICS_DIR, f"{video_id}_annotated_by_{CNNTransformer.name}.mp4"),
+                    true_labels = CNNTransformer.label_wrappers[i].true,
+                    column_names = COLUMN_NAMES
+                )
