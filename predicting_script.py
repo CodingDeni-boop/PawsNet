@@ -13,15 +13,18 @@ from VideoRotator import VideoRotator
 from Dataset import VideoSequenceDatasetNoLabels
 from model_methods import predict_per_video
 from post_processing import apply_gap_fill, apply_min_duration_filter, apply_supported_rearing_merge
+from create_video import annotate_video_with_predictions
 
 if __name__ == "__main__":
 
     ROTATE = False
+    GENERATE_ANNOTATED_VIDEOS = True
     MODEL_PATH = "model_saves/The_PawsNet.pth" # I called the model which I trained on all videos (62 train, 11 validation, 0 test) The_PawsNet.pth
     RAW_VIDEOS_DIR = "./to_predict/raw_videos"
     TRACKING_DIR = "./to_predict/tracking"
     ROTATED_VIDEOS_DIR = "./to_predict/rotated_videos"
-    PREDICTIONS_DIR      = "./predictions_no_true_labels"
+    PREDICTIONS_DIR      = "./predictions_no_true_labels/predicted_labels"
+    ANNOTATED_VIDEOS_DIR      = "./predictions_no_true_labels/annotated_videos"
     SEQUENCE_LENGTH = 30
     EVAL_STRIDE     = 5     # For fast debugging put this to 25
     IMG_SIZE        = (76, 142)
@@ -110,3 +113,17 @@ if __name__ == "__main__":
 
     print(f"\nDone. Predictions saved to: {PREDICTIONS_DIR}")
 
+    print(pd.read_csv(os.path.join(PREDICTIONS_DIR, f"{video_id}.csv"), index_col = 0))
+
+    if GENERATE_ANNOTATED_VIDEOS:
+        for i, video_id in enumerate(os.listdir(ROTATED_VIDEOS_DIR)):
+            if not video_id.endswith(".mp4"):
+                continue
+            video_id, _ = os.path.splitext(video_id)
+            annotate_video_with_predictions(
+                video_path = os.path.join(ROTATED_VIDEOS_DIR, f"{video_id}.mp4"),
+                predictions = pd.read_csv(os.path.join(PREDICTIONS_DIR, f"{video_id}.csv"), index_col = 0).idxmax(axis = 1),
+                output_path = os.path.join(ANNOTATED_VIDEOS_DIR, f"{video_id}_annotated.mp4"),
+                true_labels = None,
+                column_names = None
+            )
