@@ -113,8 +113,6 @@ if __name__ == "__main__":
 
     print(f"\nDone. Predictions saved to: {PREDICTIONS_DIR}")
 
-    print(pd.read_csv(os.path.join(PREDICTIONS_DIR, f"{video_id}.csv"), index_col = 0))
-
     if GENERATE_ANNOTATED_VIDEOS:
         for i, video_id in enumerate(os.listdir(ROTATED_VIDEOS_DIR)):
             if not video_id.endswith(".mp4"):
